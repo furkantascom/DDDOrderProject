@@ -1,4 +1,5 @@
-﻿using Order.Domain.SeedWork;
+﻿using Order.Domain.Events;
+using Order.Domain.SeedWork;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +14,11 @@ namespace Order.Domain.AggregateModels.OrderModels
         public string? Description { get; private set; }
         public Address? Address { get; private set; }
 
-        public int BuyerId { get; private set; }
+        public string? UserName { get; private set; }
         public string? OrderStatus { get; private set; }
         public ICollection<OrderItem>? OrderItems { get; private set; }
 
-        public Order(DateTime orderDate, string? description, Address? address, int buyerId, string? orderStatus, ICollection<OrderItem>? orderItems)
+        public Order(DateTime orderDate, string? description, Address? address, string? userName, string? orderStatus, ICollection<OrderItem>? orderItems)
         {
             if (orderDate < DateTime.Now)
             {
@@ -33,14 +34,21 @@ namespace Order.Domain.AggregateModels.OrderModels
             OrderDate = orderDate;
             Description = description;
             Address = address;
-            BuyerId = buyerId;
+            UserName = userName;
             OrderStatus = orderStatus;
             OrderItems = orderItems;
+
+            AddDomainEvents(new OrderStartedDomainEvent(userName, this));
         }
 
-        public void AddOrderItem()
+        public void AddOrderItem(int quantity, decimal price, int productId)
         {
-            OrderItem item = new ();
+            OrderItem item = new(quantity, price, productId);
+
+            if (OrderItems != null && item != null)
+            {
+                OrderItems.Add(item);
+            }
         }
     }
 }

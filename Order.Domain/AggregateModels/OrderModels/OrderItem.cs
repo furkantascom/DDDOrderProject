@@ -18,7 +18,7 @@ namespace Order.Domain.AggregateModels.OrderModels
             Quantity = quantity;
             Price = price;
             ProductId = productId;
-
+            
             //Validation rules
         }
     }
